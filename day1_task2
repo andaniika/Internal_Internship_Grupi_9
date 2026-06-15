@@ -1,0 +1,284 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const GradeCalculatorApp());
+}
+
+class GradeCalculatorApp extends StatelessWidget {
+  const GradeCalculatorApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Grade Calculator UI',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        useMaterial3: true,
+        colorSchemeSeed: Colors.green,
+      ),
+      home: const GradeCalculatorScreen(),
+    );
+  }
+}
+
+class GradeCalculatorScreen extends StatefulWidget {
+  const GradeCalculatorScreen({super.key});
+
+  @override
+  State<GradeCalculatorScreen> createState() => _GradeCalculatorScreenState();
+}
+
+class _GradeCalculatorScreenState extends State<GradeCalculatorScreen> {
+  final TextEditingController firstGradeController = TextEditingController();
+  final TextEditingController secondGradeController = TextEditingController();
+  final TextEditingController thirdGradeController = TextEditingController();
+
+  String resultText = 'Enter three grades to calculate the average.';
+  String statusText = '';
+  Color statusColor = Colors.black54;
+
+  void calculateAverage() {
+    String firstGradeText = firstGradeController.text.trim();
+    String secondGradeText = secondGradeController.text.trim();
+    String thirdGradeText = thirdGradeController.text.trim();
+
+    if (firstGradeText.isEmpty ||
+        secondGradeText.isEmpty ||
+        thirdGradeText.isEmpty) {
+      setState(() {
+        resultText = 'Please fill in all fields.';
+        statusText = '';
+        statusColor = Colors.red;
+      });
+      return;
+    }
+
+    double? firstGrade = double.tryParse(firstGradeText);
+    double? secondGrade = double.tryParse(secondGradeText);
+    double? thirdGrade = double.tryParse(thirdGradeText);
+
+    if (firstGrade == null || secondGrade == null || thirdGrade == null) {
+      setState(() {
+        resultText = 'Please enter only numeric values.';
+        statusText = '';
+        statusColor = Colors.red;
+      });
+      return;
+    }
+
+    double average = (firstGrade + secondGrade + thirdGrade) / 3;
+
+    setState(() {
+      resultText = 'Average: ${average.toStringAsFixed(2)}';
+
+      if (average >= 50) {
+        statusText = 'Status: Kalon';
+        statusColor = Colors.green;
+      } else {
+        statusText = 'Status: Duhet përmirësim';
+        statusColor = Colors.orange;
+      }
+    });
+  }
+
+  void clearFields() {
+    firstGradeController.clear();
+    secondGradeController.clear();
+    thirdGradeController.clear();
+
+    setState(() {
+      resultText = 'Enter three grades to calculate the average.';
+      statusText = '';
+      statusColor = Colors.black54;
+    });
+  }
+
+  @override
+  void dispose() {
+    firstGradeController.dispose();
+    secondGradeController.dispose();
+    thirdGradeController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isWideScreen = MediaQuery.of(context).size.width > 600;
+
+    return Scaffold(
+      backgroundColor: const Color(0xFFEFF7F1),
+      appBar: AppBar(
+        title: const Text('Day 1 - Grade Calculator'),
+        centerTitle: true,
+        backgroundColor: Colors.green,
+        foregroundColor: Colors.white,
+      ),
+      body: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Container(
+              width: isWideScreen ? 520 : double.infinity,
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.12),
+                    blurRadius: 14,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Icon(
+                    Icons.calculate,
+                    size: 60,
+                    color: Colors.green,
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  const Text(
+                    'Grade Calculator UI',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  const Text(
+                    'Enter three numeric grades or points. The app will calculate the average and show the final status.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 15,
+                      height: 1.5,
+                      color: Colors.black54,
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  TextField(
+                    controller: firstGradeController,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                      labelText: 'First grade',
+                      hintText: 'Example: 75',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.looks_one),
+                    ),
+                  ),
+
+                  const SizedBox(height: 14),
+
+                  TextField(
+                    controller: secondGradeController,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                      labelText: 'Second grade',
+                      hintText: 'Example: 80',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.looks_two),
+                    ),
+                  ),
+
+                  const SizedBox(height: 14),
+
+                  TextField(
+                    controller: thirdGradeController,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                      labelText: 'Third grade',
+                      hintText: 'Example: 90',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.looks_3),
+                    ),
+                  ),
+
+                  const SizedBox(height: 22),
+
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: calculateAverage,
+                          icon: const Icon(Icons.done),
+                          label: const Text('Calculate'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: clearFields,
+                          icon: const Icon(Icons.refresh),
+                          label: const Text('Clear'),
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF4F8F4),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.green.shade100),
+                    ),
+                    child: Column(
+                      children: [
+                        Text(
+                          resultText,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: statusColor,
+                          ),
+                        ),
+                        if (statusText.isNotEmpty) ...[
+                          const SizedBox(height: 8),
+                          Text(
+                            statusText,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold,
+                              color: statusColor,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
