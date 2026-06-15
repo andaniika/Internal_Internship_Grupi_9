@@ -41,7 +41,8 @@ class ProfileCardScreen extends StatelessWidget {
             ),
             color: Colors.white,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 40.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 32.0, vertical: 40.0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -49,7 +50,7 @@ class ProfileCardScreen extends StatelessWidget {
                   CircleAvatar(
                     radius: 50,
                     backgroundColor: Colors.blue,
-                    child: Icon(
+                    child: const Icon(
                       Icons.person,
                       size: 50,
                       color: Colors.white,
@@ -60,12 +61,12 @@ class ProfileCardScreen extends StatelessWidget {
 
                   // Full name text widget
                   Text(
-                    'Anda Nika',
-                    style: TextStyle(
+                    'Your Name',
+                    style: const TextStyle(
                       fontSize: 26,
                       fontWeight: FontWeight.bold,
-                      color: Colors.blue.shade900,
-                                        ),
+                      color: Colors.blue,
+                    ),
                   ),
 
                   const SizedBox(height: 8),
@@ -83,8 +84,8 @@ class ProfileCardScreen extends StatelessWidget {
                   const SizedBox(height: 24),
 
                   // Divider for visual separation
-                  Divider(
-                    color: Colors.blue.shade100,
+                  const Divider(
+                    color: Colors.blue,
                     thickness: 1,
                   ),
 
@@ -101,7 +102,7 @@ class ProfileCardScreen extends StatelessWidget {
                       ),
                       const SizedBox(width: 12),
                       Text(
-                        'an304@bgt.school',
+                        'your.email@example.com',
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey.shade700,
