@@ -1,0 +1,171 @@
+import 'package:flutter/material.dart';
+
+// Entry point of the Flutter application
+void main() {
+  runApp(const ProfileCardApp());
+}
+
+// Root widget of the application
+class ProfileCardApp extends StatelessWidget {
+  const ProfileCardApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Profile Card App',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        useMaterial3: true,
+      ),
+      home: const ProfileCardScreen(),
+    );
+  }
+}
+
+// Main screen displaying the profile card
+class ProfileCardScreen extends StatelessWidget {
+  const ProfileCardScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFE3F2FD), // Light blue background
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Card(
+            elevation: 8,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            color: Colors.white,
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 32.0, vertical: 40.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Profile icon (circular avatar with blue background)
+                  CircleAvatar(
+                    radius: 50,
+                    backgroundColor: Colors.blue,
+                    child: const Icon(
+                      Icons.person,
+                      size: 50,
+                      color: Colors.white,
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Full name text widget
+                  Text(
+                    'Your Name',
+                    style: const TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue,
+                    ),
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  // Role text widget
+                  Text(
+                    'Flutter Intern',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.blue.shade600,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Divider for visual separation
+                  const Divider(
+                    color: Colors.blue,
+                    thickness: 1,
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Row for email contact information
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.email,
+                        color: Colors.blue.shade700,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        'your.email@example.com',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey.shade700,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  // Row for phone contact information
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.phone,
+                        color: Colors.blue.shade700,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        '+1 (555) 123-4567',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey.shade700,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 28),
+
+                  // ElevatedButton for contacting
+                  ElevatedButton(
+                    onPressed: () {
+                      // Action when "Contact Me" button is pressed
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 32,
+                        vertical: 14,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 4,
+                    ),
+                    child: const Text(
+                      'Contact Me',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
