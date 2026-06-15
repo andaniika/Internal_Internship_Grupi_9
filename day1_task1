@@ -1,0 +1,188 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const ProfileCardApp());
+}
+
+class ProfileCardApp extends StatelessWidget {
+  const ProfileCardApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Profile Card App',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        useMaterial3: true,
+        colorSchemeSeed: Colors.blue,
+      ),
+      home: const ProfileCardScreen(),
+    );
+  }
+}
+
+class ProfileCardScreen extends StatefulWidget {
+  const ProfileCardScreen({super.key});
+
+  @override
+  State<ProfileCardScreen> createState() => _ProfileCardScreenState();
+}
+
+class _ProfileCardScreenState extends State<ProfileCardScreen> {
+  String buttonMessage = 'Press the button to contact me';
+
+  void showContactMessage() {
+    setState(() {
+      buttonMessage = 'Thank you! You can contact me by email.';
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Contact button clicked!'),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isWideScreen = MediaQuery.of(context).size.width > 600;
+
+    return Scaffold(
+      backgroundColor: const Color(0xFFEAF2F8),
+      appBar: AppBar(
+        title: const Text('Day 1 - Profile Card'),
+        centerTitle: true,
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Container(
+            width: isWideScreen ? 500 : double.infinity,
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.12),
+                  blurRadius: 14,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const CircleAvatar(
+                  radius: 50,
+                  backgroundColor: Colors.blue,
+                  child: Icon(
+                    Icons.person,
+                    size: 60,
+                    color: Colors.white,
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                const Text(
+                  'Emri Mbiemri',
+                  style: TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+
+                const SizedBox(height: 6),
+
+                const Text(
+                  'Flutter Intern',
+                  style: TextStyle(
+                    fontSize: 17,
+                    color: Colors.blueGrey,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+
+                const SizedBox(height: 18),
+
+                const Text(
+                  'I am learning Flutter and Dart during the Internal Internship. '
+                  'This profile card is my first Flutter screen.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 15,
+                    height: 1.5,
+                    color: Colors.black87,
+                  ),
+                ),
+
+                const SizedBox(height: 24),
+
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.email, color: Colors.blue),
+                    SizedBox(width: 10),
+                    Text(
+                      'email@example.com',
+                      style: TextStyle(fontSize: 15),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 12),
+
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.location_on, color: Colors.blue),
+                    SizedBox(width: 10),
+                    Text(
+                      'Kosovo',
+                      style: TextStyle(fontSize: 15),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 24),
+
+                Text(
+                  buttonMessage,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.black54,
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                ElevatedButton.icon(
+                  onPressed: showContactMessage,
+                  icon: const Icon(Icons.message),
+                  label: const Text('Contact Me'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 30,
+                      vertical: 14,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
