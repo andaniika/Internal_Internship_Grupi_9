@@ -1,0 +1,364 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const QuizApp());
+}
+
+class QuizApp extends StatelessWidget {
+  const QuizApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Day 3 Quiz App',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.indigo,
+      ),
+      home: const QuizScreen(),
+    );
+  }
+}
+
+class QuizQuestion {
+  final String question;
+  final List<String> options;
+  final int correctAnswerIndex;
+
+  QuizQuestion({
+    required this.question,
+    required this.options,
+    required this.correctAnswerIndex,
+  });
+}
+
+class QuizScreen extends StatefulWidget {
+  const QuizScreen({super.key});
+
+  @override
+  State<QuizScreen> createState() => _QuizScreenState();
+}
+
+class _QuizScreenState extends State<QuizScreen> {
+  int currentQuestionIndex = 0;
+  int score = 0;
+  bool hasAnswered = false;
+  int? selectedAnswerIndex;
+
+  final List<QuizQuestion> questions = [
+    QuizQuestion(
+      question: 'Çfarë është Flutter?',
+      options: [
+        'Një databazë',
+        'Një framework për ndërtimin e aplikacioneve',
+        'Një gjuhë programuese',
+        'Një sistem operativ',
+      ],
+      correctAnswerIndex: 1,
+    ),
+    QuizQuestion(
+      question: 'Cila gjuhë përdoret më së shumti në Flutter?',
+      options: [
+        'Java',
+        'Python',
+        'Dart',
+        'C++',
+      ],
+      correctAnswerIndex: 2,
+    ),
+    QuizQuestion(
+      question: 'Për çfarë përdoret setState()?',
+      options: [
+        'Për të rifreskuar UI pas ndryshimit të të dhënave',
+        'Për të fshirë aplikacionin',
+        'Për të krijuar një databazë',
+        'Për të ndalur aplikacionin',
+      ],
+      correctAnswerIndex: 0,
+    ),
+    QuizQuestion(
+      question: 'Cila komandë përdoret për të kaluar në ekran tjetër?',
+      options: [
+        'Navigator.push',
+        'Navigator.delete',
+        'setState.open',
+        'Screen.next',
+      ],
+      correctAnswerIndex: 0,
+    ),
+    QuizQuestion(
+      question: 'Çfarë bën Navigator.pop?',
+      options: [
+        'Hap një aplikacion tjetër',
+        'Kthen përdoruesin në ekranin e mëparshëm',
+        'Ndryshon ngjyrën e ekranit',
+        'Shton një pyetje të re',
+      ],
+      correctAnswerIndex: 1,
+    ),
+  ];
+
+  void selectAnswer(int selectedIndex) {
+    if (hasAnswered) return;
+
+    setState(() {
+      selectedAnswerIndex = selectedIndex;
+      hasAnswered = true;
+
+      if (selectedIndex == questions[currentQuestionIndex].correctAnswerIndex) {
+        score++;
+      }
+    });
+  }
+
+  void goToNextQuestion() {
+    if (!hasAnswered) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Zgjidh një përgjigje para se të vazhdosh.'),
+        ),
+      );
+      return;
+    }
+
+    if (currentQuestionIndex < questions.length - 1) {
+      setState(() {
+        currentQuestionIndex++;
+        hasAnswered = false;
+        selectedAnswerIndex = null;
+      });
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ResultScreen(
+            score: score,
+            totalQuestions: questions.length,
+          ),
+        ),
+      ).then((_) {
+        restartQuiz();
+      });
+    }
+  }
+
+  void restartQuiz() {
+    setState(() {
+      currentQuestionIndex = 0;
+      score = 0;
+      hasAnswered = false;
+      selectedAnswerIndex = null;
+    });
+  }
+
+  Color getButtonColor(int index) {
+    if (!hasAnswered) {
+      return Colors.indigo;
+    }
+
+    if (index == questions[currentQuestionIndex].correctAnswerIndex) {
+      return Colors.green;
+    }
+
+    if (index == selectedAnswerIndex) {
+      return Colors.red;
+    }
+
+    return Colors.indigo;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final currentQuestion = questions[currentQuestionIndex];
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Day 3 Quiz App'),
+        centerTitle: true,
+      ),
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 700),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  'Pyetja ${currentQuestionIndex + 1} / ${questions.length}',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                LinearProgressIndicator(
+                  value: (currentQuestionIndex + 1) / questions.length,
+                ),
+
+                const SizedBox(height: 30),
+
+                Text(
+                  currentQuestion.question,
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+
+                const SizedBox(height: 30),
+
+                ...List.generate(currentQuestion.options.length, (index) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: getButtonColor(index),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      onPressed: () {
+                        selectAnswer(index);
+                      },
+                      child: Text(
+                        currentQuestion.options[index],
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  );
+                }),
+
+                const Spacer(),
+
+                ElevatedButton(
+                  onPressed: goToNextQuestion,
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  child: Text(
+                    currentQuestionIndex == questions.length - 1
+                        ? 'Shiko rezultatin'
+                        : 'Pyetja tjetër',
+                    style: const TextStyle(fontSize: 17),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ResultScreen extends StatelessWidget {
+  final int score;
+  final int totalQuestions;
+
+  const ResultScreen({
+    super.key,
+    required this.score,
+    required this.totalQuestions,
+  });
+
+  String getMessage() {
+    double percentage = (score / totalQuestions) * 100;
+
+    if (percentage >= 80) {
+      return 'Shumë mirë! Ke punuar shkëlqyeshëm.';
+    } else if (percentage >= 50) {
+      return 'Mirë, por ke hapësirë për përmirësim.';
+    } else {
+      return 'Duhet të ushtrosh edhe pak.';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Rezultati final'),
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+      ),
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 600),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.emoji_events,
+                  size: 90,
+                  color: Colors.amber,
+                ),
+
+                const SizedBox(height: 20),
+
+                const Text(
+                  'Quiz përfundoi!',
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                Text(
+                  'Rezultati yt është:',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.grey[700],
+                  ),
+                ),
+
+                const SizedBox(height: 10),
+
+                Text(
+                  '$score / $totalQuestions',
+                  style: const TextStyle(
+                    fontSize: 42,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.indigo,
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                Text(
+                  getMessage(),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 18),
+                ),
+
+                const SizedBox(height: 35),
+
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 40,
+                      vertical: 16,
+                    ),
+                  ),
+                  child: const Text(
+                    'Restart',
+                    style: TextStyle(fontSize: 17),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
