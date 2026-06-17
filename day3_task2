@@ -1,0 +1,280 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const TaskTrackerApp());
+}
+
+class TaskTrackerApp extends StatelessWidget {
+  const TaskTrackerApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Day 3 Task Tracker',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.teal,
+      ),
+      home: const TaskTrackerScreen(),
+    );
+  }
+}
+
+// Model class për item-in
+class TaskItem {
+  final String title;
+  bool isDone;
+
+  TaskItem({
+    required this.title,
+    this.isDone = false,
+  });
+}
+
+class TaskTrackerScreen extends StatefulWidget {
+  const TaskTrackerScreen({super.key});
+
+  @override
+  State<TaskTrackerScreen> createState() => _TaskTrackerScreenState();
+}
+
+class _TaskTrackerScreenState extends State<TaskTrackerScreen> {
+  final TextEditingController taskController = TextEditingController();
+
+  final List<TaskItem> tasks = [
+    TaskItem(title: 'Complete Flutter Day 3 Task'),
+    TaskItem(title: 'Commit project to GitHub'),
+  ];
+
+  int get totalTasks {
+    return tasks.length;
+  }
+
+  int get completedTasks {
+    return tasks.where((task) => task.isDone).length;
+  }
+
+  int get activeTasks {
+    return tasks.where((task) => !task.isDone).length;
+  }
+
+  void showMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 1),
+      ),
+    );
+  }
+
+  void openAddTaskDialog() {
+    taskController.clear();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Add New Task'),
+          content: TextField(
+            controller: taskController,
+            decoration: const InputDecoration(
+              labelText: 'Task title',
+              hintText: 'Enter task name',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: addTask,
+              child: const Text('Add'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void addTask() {
+    final String title = taskController.text.trim();
+
+    if (title.isEmpty) {
+      showMessage('Task title cannot be empty.');
+      return;
+    }
+
+    setState(() {
+      tasks.add(TaskItem(title: title));
+    });
+
+    Navigator.pop(context);
+    showMessage('Task added successfully.');
+  }
+
+  void toggleTaskStatus(int index) {
+    setState(() {
+      tasks[index].isDone = !tasks[index].isDone;
+    });
+
+    if (tasks[index].isDone) {
+      showMessage('Task marked as done.');
+    } else {
+      showMessage('Task marked as active.');
+    }
+  }
+
+  void deleteTask(int index) {
+    final String deletedTaskTitle = tasks[index].title;
+
+    setState(() {
+      tasks.removeAt(index);
+    });
+
+    showMessage('Deleted: $deletedTaskTitle');
+  }
+
+  void confirmDeleteTask(int index) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Delete Task'),
+          content: Text('Are you sure you want to delete "${tasks[index].title}"?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                deleteTask(index);
+              },
+              child: const Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    taskController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Task Tracker'),
+        centerTitle: true,
+      ),
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 700),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                Card(
+                  elevation: 3,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        buildCountBox('Total', totalTasks),
+                        buildCountBox('Active', activeTasks),
+                        buildCountBox('Done', completedTasks),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                Expanded(
+                  child: tasks.isEmpty
+                      ? const Center(
+                          child: Text(
+                            'No tasks added yet.',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        )
+                      : ListView.builder(
+                          itemCount: tasks.length,
+                          itemBuilder: (context, index) {
+                            final TaskItem task = tasks[index];
+
+                            return Card(
+                              margin: const EdgeInsets.only(bottom: 10),
+                              child: ListTile(
+                                leading: Checkbox(
+                                  value: task.isDone,
+                                  onChanged: (_) {
+                                    toggleTaskStatus(index);
+                                  },
+                                ),
+                                title: Text(
+                                  task.title,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    decoration: task.isDone
+                                        ? TextDecoration.lineThrough
+                                        : TextDecoration.none,
+                                  ),
+                                ),
+                                subtitle: Text(
+                                  task.isDone ? 'Status: Done' : 'Status: Active',
+                                ),
+                                trailing: IconButton(
+                                  icon: const Icon(Icons.delete, color: Colors.red),
+                                  onPressed: () {
+                                    confirmDeleteTask(index);
+                                  },
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: openAddTaskDialog,
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+
+  Widget buildCountBox(String label, int count) {
+    return Column(
+      children: [
+        Text(
+          '$count',
+          style: const TextStyle(
+            fontSize: 26,
+            fontWeight: FontWeight.bold,
+            color: Colors.teal,
+          ),
+        ),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 15),
+        ),
+      ],
+    );
+  }
+}
