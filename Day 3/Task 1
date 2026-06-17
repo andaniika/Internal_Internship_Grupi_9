@@ -1,0 +1,179 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const QuizApp());
+}
+
+class QuizApp extends StatelessWidget {
+  const QuizApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Quiz App',
+      home: const QuizScreen(),
+    );
+  }
+}
+
+class QuizScreen extends StatefulWidget {
+  const QuizScreen({super.key});
+
+  @override
+  State<QuizScreen> createState() => _QuizScreenState();
+}
+
+class _QuizScreenState extends State<QuizScreen> {
+  int currentQuestion = 0;
+  int score = 0;
+
+  final List<Map<String, dynamic>> questions = [
+    {
+      'question': 'What is Flutter?',
+      'options': [
+        'Programming Language',
+        'Database',
+        'UI Framework',
+        'Operating System'
+      ],
+      'answer': 'UI Framework',
+    },
+    {
+      'question': 'Which language is used by Flutter?',
+      'options': ['Java', 'Kotlin', 'Swift', 'Dart'],
+      'answer': 'Dart',
+    },
+    {
+      'question': 'Who develops Flutter?',
+      'options': ['Apple', 'Google', 'Microsoft', 'Meta'],
+      'answer': 'Google',
+    },
+    {
+      'question': 'Which widget is immutable?',
+      'options': [
+        'StatefulWidget',
+        'StatelessWidget',
+        'Container',
+        'Scaffold'
+      ],
+      'answer': 'StatelessWidget',
+    },
+    {
+      'question': 'Which widget provides app structure?',
+      'options': ['Text', 'Scaffold', 'Icon', 'Row'],
+      'answer': 'Scaffold',
+    },
+  ];
+
+  void answerQuestion(String selectedAnswer) {
+    if (selectedAnswer == questions[currentQuestion]['answer']) {
+      score++;
+    }
+
+    if (currentQuestion < questions.length - 1) {
+      setState(() {
+        currentQuestion++;
+      });
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ResultScreen(
+            score: score,
+            totalQuestions: questions.length,
+          ),
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final question = questions[currentQuestion];
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Quiz App'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Text(
+              question['question'],
+              style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            ...(question['options'] as List<String>).map(
+              (option) => Container(
+                width: double.infinity,
+                margin: const EdgeInsets.symmetric(vertical: 6),
+                child: ElevatedButton(
+                  onPressed: () => answerQuestion(option),
+                  child: Text(option),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ResultScreen extends StatelessWidget {
+  final int score;
+  final int totalQuestions;
+
+  const ResultScreen({
+    super.key,
+    required this.score,
+    required this.totalQuestions,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Result'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Your Score',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              '$score / $totalQuestions',
+              style: const TextStyle(fontSize: 32),
+            ),
+            const SizedBox(height: 20),
+
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const QuizScreen(),
+                  ),
+                );
+              },
+              child: const Text('Restart Quiz'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
