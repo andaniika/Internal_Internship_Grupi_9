@@ -1,0 +1,228 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: const RegistrationPage(),
+    );
+  }
+}
+
+class RegistrationPage extends StatefulWidget {
+  const RegistrationPage({super.key});
+
+  @override
+  State<RegistrationPage> createState() => _RegistrationPageState();
+}
+
+class _RegistrationPageState extends State<RegistrationPage> {
+
+  final _formKey = GlobalKey<FormState>();
+
+  final nameController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  String role = "Student";
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  void submitForm() {
+
+    if (_formKey.currentState!.validate()) {
+
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text("Registration Successful"),
+          content: Text(
+            "Name: ${nameController.text}\n"
+            "Email: ${emailController.text}\n"
+            "Role: $role",
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text("OK"),
+            )
+          ],
+        ),
+      );
+
+    }
+
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Scaffold(
+
+      appBar: AppBar(
+        title: const Text("Registration Form"),
+      ),
+
+      body: Padding(
+
+        padding: const EdgeInsets.all(16),
+
+        child: Form(
+
+          key: _formKey,
+
+          child: ListView(
+
+            children: [
+
+              TextFormField(
+
+                controller: nameController,
+
+                decoration: const InputDecoration(
+                  labelText: "Name",
+                  border: OutlineInputBorder(),
+                ),
+
+                validator: (value) {
+
+                  if (value == null || value.isEmpty) {
+                    return "Enter your name";
+                  }
+
+                  return null;
+
+                },
+
+              ),
+
+              const SizedBox(height: 15),
+
+              TextFormField(
+
+                controller: emailController,
+
+                decoration: const InputDecoration(
+                  labelText: "Email",
+                  border: OutlineInputBorder(),
+                ),
+
+                validator: (value) {
+
+                  if (value == null || value.isEmpty) {
+                    return "Enter email";
+                  }
+
+                  if (!value.contains("@")) {
+                    return "Invalid email";
+                  }
+
+                  return null;
+
+                },
+
+              ),
+
+              const SizedBox(height: 15),
+
+              TextFormField(
+
+                controller: passwordController,
+
+                obscureText: true,
+
+                decoration: const InputDecoration(
+                  labelText: "Password",
+                  border: OutlineInputBorder(),
+                ),
+
+                validator: (value) {
+
+                  if (value == null || value.length < 6) {
+                    return "Minimum 6 characters";
+                  }
+
+                  return null;
+
+                },
+
+              ),
+
+              const SizedBox(height: 15),
+
+              DropdownButtonFormField<String>(
+
+                value: role,
+
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "Role",
+                ),
+
+                items: const [
+
+                  DropdownMenuItem(
+                    value: "Student",
+                    child: Text("Student"),
+                  ),
+
+                  DropdownMenuItem(
+                    value: "Teacher",
+                    child: Text("Teacher"),
+                  ),
+
+                  DropdownMenuItem(
+                    value: "Admin",
+                    child: Text("Admin"),
+                  ),
+
+                ],
+
+                onChanged: (value) {
+
+                  setState(() {
+                    role = value!;
+                  });
+
+                },
+
+              ),
+
+              const SizedBox(height: 25),
+
+              ElevatedButton(
+
+                onPressed: submitForm,
+
+                child: const Text("Register"),
+
+              ),
+
+            ],
+
+          ),
+
+        ),
+
+      ),
+
+    );
+
+  }
+
+}
