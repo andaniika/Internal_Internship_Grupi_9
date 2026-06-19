@@ -1,0 +1,196 @@
+import 'package:flutter/material.dart';
+import 'task.dart';
+
+class TrackerPage extends StatefulWidget {
+  const TrackerPage({super.key});
+
+  @override
+  State<TrackerPage> createState() => _TrackerPageState();
+}
+
+class _TrackerPageState extends State<TrackerPage> {
+
+  final List<Task> tasks = [];
+
+  final TextEditingController controller =
+      TextEditingController();
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  void addTask() {
+
+    if (controller.text.trim().isEmpty) return;
+
+    setState(() {
+
+      tasks.add(
+        Task(title: controller.text.trim()),
+      );
+
+    });
+
+    controller.clear();
+
+    Navigator.pop(context);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+
+      const SnackBar(
+        content: Text("Task Added Successfully"),
+      ),
+
+    );
+
+  }
+
+  void deleteTask(int index) {
+
+    setState(() {
+
+      tasks.removeAt(index);
+
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+
+      const SnackBar(
+        content: Text("Task Deleted"),
+      ),
+
+    );
+
+  }
+
+  void toggleTask(int index) {
+
+    setState(() {
+
+      tasks[index].isDone =
+          !tasks[index].isDone;
+
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+
+      SnackBar(
+
+        content: Text(
+
+          tasks[index].isDone
+              ? "Task Completed"
+              : "Task Marked Active",
+
+        ),
+
+      ),
+
+    );
+
+  }
+
+  void showAddDialog() {
+
+    showDialog(
+
+      context: context,
+
+      builder: (context) {
+
+        return AlertDialog(
+
+          title: const Text("Add Task"),
+
+          content: TextField(
+
+            controller: controller,
+
+            decoration: const InputDecoration(
+              labelText: "Task Name",
+            ),
+
+          ),
+
+          actions: [
+
+            TextButton(
+
+              onPressed: () {
+
+                Navigator.pop(context);
+
+              },
+
+              child: const Text("Cancel"),
+
+            ),
+
+            ElevatedButton(
+
+              onPressed: addTask,
+
+              child: const Text("Add"),
+
+            ),
+
+          ],
+
+        );
+
+      },
+
+    );
+
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    int completed =
+        tasks.where((e) => e.isDone).length;
+
+    return Scaffold(
+
+      appBar: AppBar(
+        title: const Text("Task Tracker"),
+      ),
+
+      floatingActionButton: FloatingActionButton(
+
+        onPressed: showAddDialog,
+
+        child: const Icon(Icons.add),
+
+      ),
+
+      body: Column(
+
+        children: [
+
+          Padding(
+
+            padding: const EdgeInsets.all(16),
+
+            child: Text(
+
+              "Completed: $completed / ${tasks.length}",
+
+              style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+
+            ),
+
+          ),
+
+          Expanded(
+
+            child: ListView.builder(
+
+              itemCount: tasks.length,
+
+              itemBuilder: (context, index) {
